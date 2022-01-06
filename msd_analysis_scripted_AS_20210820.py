@@ -12,13 +12,14 @@ import cycler
 
 
 def read_tracks(filepath):
+    # reads the .tck files
     with open(filepath) as fp:
         x = fp.readline().strip().replace(",", ".").split('\t')
         y = fp.readline().strip().replace(",", ".").split('\t')
         z = fp.readline().strip().replace(",", ".").split('\t')
         t = fp.readline().strip().replace(",", ".").split('\t')
 
-    # XYZ - in microns, t - time in seconds. t0 is not equal to zero, so you might want to subtract it from every value in t or smth
+    # XYZ - in microns, t - time in seconds. t0 is not equal to zero, so you might want to subtract it from every value in t
     x = [float(i) for i in x]
     y = [float(i) for i in y]
     z = [float(i) for i in z]
@@ -27,7 +28,8 @@ def read_tracks(filepath):
     # norming the time
     t = t - np.min(t)
     t = t + t[1]
-    t = t / 1000
+    # if for whatever reason time is given in milliseconds, here's the fix
+    # t = t / 1000
 
     # getting the size of the dataset
     N = np.size(t)
@@ -45,68 +47,22 @@ def calc_and_plot_3d_track(x, y, z, t, N, name, foldername):
     ZMin = np.min(z)
     ZMax = np.max(z)
 
+    # rough estimate of the volume explored by the particle
     Volume = (XMax - XMin) * (YMax - YMin) * (ZMax - ZMin)
     Volume = round(Volume, 2)
 
+    # plotting the trajectory in 3D
     fig, ax = plt.subplots(figsize=(5, 5), subplot_kw={"projection" : "3d"},  dpi=300)
-    # ax = fig.add_subplot(111, projection='3d')
     ax.plot(x[1:N], y[1:N], z[1:N])
     ax.scatter3D(x[1:N], y[1:N], z[1:N], c=t[1:N], cmap='Greens', alpha=1, zorder=10)
 
-    # x_min, x_max = ax.get_xlim()
-    # y_min, y_max = ax.get_ylim()
-    # z_min, z_max = ax.get_zlim()
-    # ax.set_xlim3d(-7.5,x_max+3)
-    # ax.set_ylim3d(-7.5,7.5)
-    # ax.set_zlim3d(-7.5,7.5)
-    #
-    # y_wall = np.arange(y_min, y_max, 0.25)
-    # x_wall = np.arange(x_min, x_max, 0.25)
-    # y_wall, x_wall = np.meshgrid(y_wall, x_wall)
-    # z_wall = np.zeros_like(x_wall)
-    # z_wall.fill(-6)
-    # ax.plot_surface(x_wall, y_wall, z_wall, color='red', alpha=0.3, zorder=-10)
-    #
-    # y_wall = np.arange(y_min, y_max, 0.25)
-    # x_wall = np.arange(x_min, x_max, 0.25)
-    # y_wall, x_wall = np.meshgrid(y_wall, x_wall)
-    # z_wall = np.zeros_like(x_wall)
-    # z_wall.fill(6)
-    # ax.plot_surface(x_wall, y_wall, z_wall, color='red', alpha=0.3, zorder=-10)
-    #
-    # z_wall = np.arange(z_min, z_max, 0.25)
-    # y_wall = np.arange(y_min, y_max, 0.25)
-    # z_wall, y_wall = np.meshgrid(z_wall, y_wall)
-    # x_wall = np.zeros_like(z_wall)
-    # x_wall.fill(-6)
-    # ax.plot_surface(x_wall, y_wall, z_wall, color='red', alpha=0.3, zorder=-10)
-    #
-    # z_wall = np.arange(z_min, z_max, 0.25)
-    # x_wall = np.arange(x_min, x_max, 0.25)
-    # z_wall, x_wall = np.meshgrid(z_wall, x_wall)
-    # y_wall = np.zeros_like(z_wall)
-    # y_wall.fill(-6)
-    # ax.plot_surface(x_wall, y_wall, z_wall, color='red', alpha=0.3, zorder=-10)
-    #
-    # z_wall = np.arange(z_min, z_max, 0.25)
-    # x_wall = np.arange(x_min, x_max, 0.25)
-    # z_wall, x_wall = np.meshgrid(z_wall, x_wall)
-    # y_wall = np.zeros_like(z_wall)
-    # y_wall.fill(6)
-    # ax.plot_surface(x_wall, y_wall, z_wall, color='red', alpha=0.3, zorder=-10)
-
-    # ax.xaxis.set_rotate_label(False)
     ax.set_xlabel('X, ${\mu}$m', fontsize=12)
-    # ax.yaxis.set_rotate_label(False)
     ax.set_ylabel('Y, ${\mu}$m', fontsize=12)
-    # ax.zaxis.set_rotate_label(False)
     ax.set_zlabel('Z, ${\mu}$m', fontsize=12)
     plt.subplots_adjust(top=1.1, left=0, bottom=0)
 
-    # plt.show()
-    # plt.close()
-
     plt.savefig(foldername + "/figures/" + "Trajectory " + str(name) + " 3Dplot.png", format="png")
+    # SHOWPLOTS is set further
     if SHOWPLOTS:
         plt.show()
     plt.close()
@@ -114,6 +70,8 @@ def calc_and_plot_3d_track(x, y, z, t, N, name, foldername):
 
 
 def calc_and_plot_MSDs_XYZ(x, y, z, t, N):
+    # Calculates MSD curves separately along each of the axes
+    
     # for the MSD in X
     MSDinX = np.array(x[0:N])
     DispX = np.zeros((N, N)).astype('float64')
@@ -135,6 +93,7 @@ def calc_and_plot_MSDs_XYZ(x, y, z, t, N):
     # if SHOWPLOTS:
     #     plt.show()
     # plt.close()
+    
     # # for the MSD in Y
     MSDinY = np.array(y[0:N])
     DispY = np.zeros((N, N)).astype('float64')
@@ -153,6 +112,7 @@ def calc_and_plot_MSDs_XYZ(x, y, z, t, N):
     # if SHOWPLOTS:
     #     plt.show()
     # plt.close()
+    
     # for the MSD in Z
     MSDinZ = np.array(z[0:N])
     DispZ = np.zeros((N, N)).astype('float64')
@@ -181,14 +141,16 @@ def calc_and_plot_MSDs_XYZ(x, y, z, t, N):
 
 
 def calc_displacements_and_speeds(x, y, z, t, N):
+    # Calculates displacements and momentary speeds
+    # in X
     dx0 = np.array(x[0: N])
     dx1 = np.array(x[1: (N + 1)])
     dx = dx1 - dx0
-    # y
+    # in Y
     dy0 = np.array(y[0: N])
     dy1 = np.array(y[1: (N + 1)])
     dy = dy1 - dy0
-    # z
+    # in Z
     dz0 = np.array(z[0: N])
     dz1 = np.array(z[1: (N + 1)])
     dz = dz1 - dz0
@@ -202,26 +164,27 @@ def calc_displacements_and_speeds(x, y, z, t, N):
 
 
 def calc_MSD_3D(MSDinX, MSDinY, MSDinZ, t, N, name, foldername):
+    # Calculates the full three-dimensional MSD and shows it in log-log scale
     DinXlist = []
     DinYlist = []
     DinZlist = []
     Din3Dlist = []
 
     MSD3D = (MSDinX + MSDinY + MSDinZ)
-    #  plt.figure('Disp3D'); plt.imshow(Disp3D)
-    # plt.figure('MSD', dpi=300)
-    # plt.plot(t[0:N - 3], MSD3D[1:N], '--b')  # a dashed blue line shows the MSD for 3D movement
-    # plt.xscale('log')
-    # plt.yscale('log')
-    # plt.xlabel('Time step, s')
-    # plt.ylabel('MSD, ${\mu}$m${^2}$/s')
-    #
+    plt.figure('Disp3D'); plt.imshow(Disp3D)
+    plt.figure('MSD', dpi=300)
+    plt.plot(t[0:N - 3], MSD3D[1:N], '--b')  # a dashed blue line shows the MSD for 3D movement
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('Time step, s')
+    plt.ylabel('MSD, ${\mu}$m${^2}$/s')
+    
     MSDxy = (MSDinX + MSDinY)
-    # plt.figure('MSD', dpi=300)
-    # plt.plot(t[0:N - 3], MSDxy[1:N], '-k')  # a plain black line shows the MSD for 3D movement
-    # plt.xscale('log')
-    # plt.yscale('log')
-    # plt.plot([t[0], t[N - 1]], [MSDxy[1], MSDxy[1] * (N - 1)], 'k:')
+    plt.figure('MSD', dpi=300)
+    plt.plot(t[0:N - 3], MSDxy[1:N], '-k')  # a plain black line shows the MSD for 3D movement
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.plot([t[0], t[N - 1]], [MSDxy[1], MSDxy[1] * (N - 1)], 'k:')
 
     D3D = MSD3D[1] / (6 * t[0])
     Dxy = MSDxy[1] / (4 * t[0])
@@ -229,10 +192,10 @@ def calc_MSD_3D(MSDinX, MSDinY, MSDinZ, t, N, name, foldername):
     Dy = MSDinY[1] / (2 * t[0])
     Dz = MSDinZ[1] / (2 * t[0])
 
-    # plt.savefig(foldername + "/figures/" + "MSDs " + str(name) + " .png", format="png")
-    # if SHOWPLOTS:
-    #     plt.show()
-    # plt.close()
+    plt.savefig(foldername + "/figures/" + "MSDs " + str(name) + " .png", format="png")
+    if SHOWPLOTS:
+       plt.show()
+    plt.close()
 
     Din3Dlist = []
     local3Dlist = [str(name), D3D, ' um^2/s']
@@ -247,7 +210,7 @@ def calc_MSD_3D(MSDinX, MSDinY, MSDinZ, t, N, name, foldername):
 
 
 def plot_speeds(speeds, t, N, name, foldername):
-    # now just the spees in windows of 10
+    # now just the speeds in windows of 10
     RS = np.linspace(1, N - 40, num=N - 40)
     # this gives a plot of the speeds the tracked particle has. Speeds are smoothed over a rolling window of 40 values.
     plt.figure('Rolling window speeds ' + str(name), dpi=300)
@@ -266,8 +229,7 @@ def plot_speeds(speeds, t, N, name, foldername):
     if SHOWPLOTS:
         plt.show()
     plt.close()
-
-    # %%
+    
     plt.figure('Displacement speeds histogram ' + str(name), dpi=300)
     plt.title('Displacement speeds histogram ' + str(name))
     plt.hist(speeds, bins=20, range=[0, np.max(speeds)])
@@ -280,6 +242,7 @@ def plot_speeds(speeds, t, N, name, foldername):
 
 
 def plot_2D_trajectories(x, y, z, N, name, foldername):
+    # Plots the 2D projections of the entire trajectory
     # xy-Trajectory
 
     plt.figure('xy trajectory' + str(name), dpi=300)
@@ -316,17 +279,19 @@ def plot_2D_trajectories(x, y, z, N, name, foldername):
 
 
 def analyze_trajectory(filepath, name):
+    # Analyzes the given trajectory, using the pre-defined functions
     x, y, z, t, N = read_tracks(filepath)
     Volume = calc_and_plot_3d_track(x, y, z, t, N, name, foldername)
     MSDinX, MSDinY, MSDinZ = calc_and_plot_MSDs_XYZ(x, y, z, t, N)
     dx, dy, dz, dd, speeds = calc_displacements_and_speeds(x, y, z, t, N)
     MSD3D, D3D, Dx, Dy, Dz, MSDxy, Dxy = calc_MSD_3D(MSDinX, MSDinY, MSDinZ, t, N, name, foldername)
-    # plot_speeds(speeds, t, N, name, foldername)
-    # plot_2D_trajectories(x, y, z, N, name, foldername)
+    plot_speeds(speeds, t, N, name, foldername)
+    plot_2D_trajectories(x, y, z, N, name, foldername)
     return (t, MSDinX, MSDinY, MSDinZ, MSD3D, D3D, Dx, Dy, Dz, MSDxy, Dxy, speeds, Volume)
 
 
 def analyze_folder(dirpath):
+    # Analyzes all files in a directory and creates a report
     MSD3D_max = []
     MSD3D_0 = []
     D3Ds = []
@@ -386,30 +351,23 @@ if os.path.exists(foldername + "/figures/") == False:
 # run the analysis and print the results
 t, MSD3D_max, MSD3D_0, D3Ds, DXs, DYs, DZs, MSDSxys, Dxys, speeds_median, volumes, batch_msds, batch_msds_xy = analyze_folder(
     foldername)
-# plt.figure('MSD3D_max')
-# plt.plot(MSD3D_max)
-# plt.show()
-# for i in range(len(MSD3D_max)):
-#     print(MSD3D_max[i])
 
 if BATCHMSD:
     N = np.size(t) - 1
     np_batch = np.array(batch_msds)
-    # np.stack(np_batch)
-    # print(np_batch)
     ave_batch = np.median(np_batch, axis=0)
     lower_quart = np.percentile(np_batch, 25, axis=0)
     upper_quart = np.percentile(np_batch, 75, axis=0)
-    # for k in range(len(batch_msds[0])):
-    #     ave_batch[k] = np.average(batch_msds[:][k])
+    for k in range(len(batch_msds[0])):
+        ave_batch[k] = np.average(batch_msds[:][k])
     plt.figure('All MSDs', dpi=300)
-    color = plt.cm.inferno(np.linspace(0, 1, len(batch_msds)))
-    plt.rcParams['axes.prop_cycle'] = cycler.cycler('color', color)
     for i in range(len(batch_msds)):
-        plt.plot(t[0:N - 3], batch_msds[i][1:N], alpha=1,
-                 linewidth=0.3)  # a plain black line shows the MSD for 3D movement
-    # plt.plot(t[0:N - 3], ave_batch[1:N], '-r', alpha=1, linewidth=1.5)
-    # plt.fill_between(t[0:N - 3], lower_quart[1:N], upper_quart[1:N], color='r', alpha=0.3, edgecolor='none')
+        plt.plot(t[0:N - 3], batch_msds[i][1:N], '-k', alpha=0.1, linewidth=0.5)  # a set of plain black lines shows the MSD for 3D movement for each of the analyzed trajectories
+    # a red line shows the median MSD
+    plt.plot(t[0:N - 3], ave_batch[1:N], '-r', alpha=1, linewidth=1.5)
+    # the light red shading for the interquartile range
+    plt.fill_between(t[0:N - 3], lower_quart[1:N], upper_quart[1:N], color='r', alpha=0.3, edgecolor='none')
+    
     plt.xscale('log')
     plt.yscale('log')
     plt.xlabel('Time step (${\\tau}$), s', size=16)
@@ -419,20 +377,7 @@ if BATCHMSD:
     plt.subplots_adjust(bottom=0.15, top=0.95)
     plt.savefig(foldername + "/figures/" + "All MSDs.png", format="png")
     plt.show()
-
-    MSD_diff = np.diff(ave_batch)
-    print(len(MSD_diff))
-    MSD_ones = np.ones_like(MSD_diff)
-    MSD_zeroes = np.zeros_like(MSD_diff)
-    plt.figure(dpi=300)
-    plt.plot(t[0:N - 4], MSD_diff[1:N], '-g', alpha=1, linewidth=1.5)
-    plt.plot(t[0:N - 4], MSD_ones[1:N], '--', alpha=0.5, linewidth=1)
-    plt.plot(t[0:N - 4], MSD_zeroes[1:N], '--', alpha=0.5, linewidth=1)
-    plt.xlabel('Time step (${\\tau}$), a.u.', size=16)
-    # plt.ylabel('MSD, ${\mu}$m${^2}$/s')
-    plt.ylabel('${\\Delta}$MSD, a.u.', size=16)
-    plt.savefig(foldername + "/figures/" + "Median MSD_derivatives.png", format="png")
-    plt.show()
+    
 
 if BATCHMSD_XY:
     N = np.size(t) - 1
