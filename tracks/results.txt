@@ -1,0 +1,16 @@
+Results for the directory F:\My Drive\Work\!Work\Programming exercises\python from Axel\tracks/
+
+List of total displacements:[743.2200000000009, 236.06000000000031]
+Average total displacement:489.6400000000006 +- 253.5800000000003
+
+List of MSDs at dt=1:[1.1736947456213511, 1.172660550458716]
+Average of MSDs at dt=1:1.1731776480400335 +- 0.0005170975813175716
+
+List of D coefficients in 3D:[195.61579093689184, 195.44342507645266]
+Average D:195.52960800667225 +- 0.08618293021959289
+
+List of median speeds:[799.3338884263112, 799.3338884263114]
+Average speed:799.3338884263113 +- 1.1368683772161603e-13
+
+List of total covered volumes:[48187.56, 38402.32]
+Average covered volume:43294.94 +- 4892.619999999999
