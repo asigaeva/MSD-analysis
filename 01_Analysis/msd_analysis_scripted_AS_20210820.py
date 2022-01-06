@@ -179,12 +179,16 @@ def calc_MSD_3D(MSDinX, MSDinY, MSDinZ, t, N, name, foldername):
     plt.xlabel('Time step, s')
     plt.ylabel('MSD, ${\mu}$m${^2}$/s')
     
-    MSDxy = (MSDinX + MSDinY)
-    plt.figure('MSD', dpi=300)
-    plt.plot(t[0:N - 3], MSDxy[1:N], '-k')  # a plain black line shows the MSD for 3D movement
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.plot([t[0], t[N - 1]], [MSDxy[1], MSDxy[1] * (N - 1)], 'k:')
+    # If needed, the following section can be used to plot the MSD for XY only (not using the displacement in Z)
+    
+    # MSDxy = (MSDinX + MSDinY)
+    # plt.figure('MSD', dpi=300)
+    # plt.plot(t[0:N - 3], MSDxy[1:N], '-k')  # a plain black line shows the MSD for 3D movement
+    # plt.xscale('log')
+    # plt.yscale('log')
+    
+    # If needed, the following line can be used to plot the line with a slope of 1 - the ideal case of random walk
+    # plt.plot([t[0], t[N - 1]], [MSDxy[1], MSDxy[1] * (N - 1)], 'k:')
 
     D3D = MSD3D[1] / (6 * t[0])
     Dxy = MSDxy[1] / (4 * t[0])
