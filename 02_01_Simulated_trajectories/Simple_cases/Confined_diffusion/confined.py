@@ -5,7 +5,6 @@ dims = 3
 step_n = 1200
 step_set = [-1, -.5, -.3, 0, .3, .5, 1]
 limits = [0.6, -0.6, 0.6, -0.6, 0.6, -0.6] # upper xlim, lower xlim, upper ylim, lower ylim, upper zlim, lower zlim
-# limits = [1000, -1000, 1000, -1000, 1000, -1000]
 origin = np.zeros((1, dims))
 # Simulate steps in 3D
 for i in range(50):
@@ -13,11 +12,6 @@ for i in range(50):
     steps = np.random.choice(a=step_set, size=step_shape)
     path = np.concatenate([origin, steps])
     for k in range(1, len(path)):
-        # if ((k % 10 == 0) & (limits[0]<8)):
-        # if (k % 10 == 0):
-        limits = [x+.05 for x in limits]
-        # if ((k % 1200 == 0)):
-        #     limits = [1000,-1000,1000,-1000,1000,-1000]
         path[k] = path[k - 1] + path[k]
         while (path[k][0] > limits[0]) or (path[k][0] < limits[1]):
             if path[k][0] >= limits[0]:
@@ -37,7 +31,6 @@ for i in range(50):
     start = path[:1]
     stop = path[-1:]
     x, y, z, t = [], [], [], []
-    limits = [0.6, -0.6, 0.6, -0.6, 0.6, -0.6]
 
     for set in path:
         x.append(set[0])
