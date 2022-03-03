@@ -1,0 +1,2 @@
+In this case, the trajectory is built as a sum of ballistic movement and random walk.
+For each individual file, the vector of the ballistic velocity (both the direction and the magnitude) is calculated, based on the three randomly chosen displacements (one for X, Y and Z). The set of possible displacements is defined as a linear space of 1000 numbers between -0.5 and +0.5 a.u.
