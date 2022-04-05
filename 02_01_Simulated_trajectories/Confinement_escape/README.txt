@@ -1,0 +1,1 @@
+In this case, the confinement is pre-set at [-0.6, 0.6] a.u. in every dimension. At a certain point of the trajectory, randomly chosen to be between 10% and 90% of the total length, the confinement is removed, and the particle can diffuse freely.
